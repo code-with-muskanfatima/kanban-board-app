@@ -1,0 +1,153 @@
+/* ========== Main Layout ========== */
+.main-layout {
+  display: flex;
+  height: calc(100vh - 64px); /* Assuming 64px header */
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar-section {
+  width: 240px;
+  min-width: 240px;
+  background-color: #f9f9f9;
+  border-right: 2px solid #eee;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Main Kanban Section */
+.kanban-section {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #ffffff;
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Kanban Board - Horizontal Scrollable */
+/* .board {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 1rem;
+  min-height: 100%;
+} */
+
+.board::-webkit-scrollbar {
+  height: 6px;
+}
+.board::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 4px;
+}
+
+/* Column */
+.column {
+  background-color: #edeeef;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 280px;
+  min-width: 280px;
+  min-height: 500px;       /* ✅ Fixed minimum height */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+
+
+.column:hover {
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+}
+
+/* Column Header */
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.column-header h2 {
+  font-size: 24px;
+  font-weight: 400;
+  color: #1e293b;
+  font-family: sans-serif;
+}
+
+/* Add Button */
+.add-button {
+  background: white;
+  border: none;
+  font-size: 20px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.add-button:hover {
+  background-color: #e2e8f0;
+}
+
+/* Task Card */
+/* .task-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease;
+}
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+} */
+
+/* Task Card Content */
+/* .task-card .title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+} */
+.task-card .desc {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.task-card .date {
+  font-size: 12px;
+  color: #999;
+  font-weight: 100;
+}
+
+/* Tag styles */
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: #e0f2ff;
+  color: #0077b6;
+}
+
+/* Prevent entire layout overflow */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
