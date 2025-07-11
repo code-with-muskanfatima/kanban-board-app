@@ -1,49 +1,73 @@
-// Kanban.jsx (updated)
-import React, { useState } from 'react';
+// src/components/Kanban.jsx
+import React, { useEffect, useState } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import KanbanColumn from './Column';
-import initialData from '../data/initialData ';
+import { databases, ID, DATABASE_ID, COLLECTION_ID } from '../appwriteConfig';
+import './Kanban.css';
 
 function Kanban() {
-  const [columns, setColumns] = useState(initialData);
+  const [columns, setColumns] = useState({
+    todo: { name: 'To Do', tasks: [] },
+    'in-progress': { name: 'In Progress', tasks: [] },
+    done: { name: 'Done', tasks: [] },
+  });
+
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    tags: '',
     date: '',
     description: '',
     column: 'todo',
   });
 
-  const handleDragEnd = (result) => {
-    const { source, destination } = result;
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
+
+        const newColumns = {
+          todo: { name: 'To Do', tasks: [] },
+          'in-progress': { name: 'In Progress', tasks: [] },
+          done: { name: 'Done', tasks: [] },
+        };
+
+        res.documents.forEach((doc) => {
+          if (newColumns[doc.status]) {
+            newColumns[doc.status].tasks.push(doc);
+          }
+        });
+
+        setColumns(newColumns);
+      } catch (err) {
+        console.error('Error fetching tasks:', err);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
+  const handleDragEnd = async ({ source, destination }) => {
     if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
     const sourceCol = columns[source.droppableId];
     const destCol = columns[destination.droppableId];
-    const movedTask = sourceCol.tasks[source.index];
+    const [movedTask] = sourceCol.tasks.splice(source.index, 1);
+    destCol.tasks.splice(destination.index, 0, movedTask);
 
-    const updatedSourceTasks = [...sourceCol.tasks];
-    updatedSourceTasks.splice(source.index, 1);
+    setColumns({ ...columns });
 
-    const updatedDestTasks = [...destCol.tasks];
-    updatedDestTasks.splice(destination.index, 0, movedTask);
-
-    setColumns({
-      ...columns,
-      [source.droppableId]: {
-        ...sourceCol,
-        tasks: updatedSourceTasks,
-      },
-      [destination.droppableId]: {
-        ...destCol,
-        tasks: updatedDestTasks,
-      },
-    });
+    try {
+      await databases.updateDocument(DATABASE_ID, COLLECTION_ID, movedTask.$id, {
+        status: destination.droppableId,
+      });
+    } catch (err) {
+      console.error('Failed to update status in Appwrite:', err);
+    }
   };
 
   const openModal = (colId) => {
-    setFormData({ title: '', tags: '', date: '', description: '', column: colId });
+    setFormData({ title: '', date: '', description: '', column: colId });
     setShowModal(true);
   };
 
@@ -52,32 +76,66 @@ function Kanban() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const createTask = () => {
-    if (!formData.title || !formData.date) return;
+  const createTask = async () => {
+    if (!formData.title || !formData.date) {
+      alert("Title and Date are required.");
+      return;
+    }
 
     const newTask = {
-      id: Date.now().toString(),
-      title: formData.title,
-      description: formData.description || '',
+      title: formData.title.trim(),
+      description: formData.description?.trim() || '',
       date: formData.date,
-      tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
+      status: formData.column,
+      image: 'https://source.unsplash.com/40x40/?face',
     };
 
-    setColumns((prev) => ({
-      ...prev,
-      [formData.column]: {
-        ...prev[formData.column],
-        tasks: [...prev[formData.column].tasks, newTask],
-      },
-    }));
+    try {
+      const res = await databases.createDocument(
+        DATABASE_ID,
+        COLLECTION_ID,
+        ID.unique(),
+        newTask
+      );
+
+      // Add task to UI
+      setColumns((prev) => ({
+        ...prev,
+        [formData.column]: {
+          ...prev[formData.column],
+          tasks: [res, ...prev[formData.column].tasks],
+        },
+      }));
+    } catch (err) {
+      console.error("❌ Failed to create task:", err.message);
+      alert("Failed to create task. Check console.");
+    }
 
     setShowModal(false);
+  };
+
+  const handleDelete = async (taskId, columnId) => {
+    setColumns((prev) => {
+      const newTasks = prev[columnId].tasks.filter(task => task.$id !== taskId);
+      return {
+        ...prev,
+        [columnId]: {
+          ...prev[columnId],
+          tasks: newTasks,
+        },
+      };
+    });
+
+    try {
+      await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, taskId);
+    } catch (error) {
+      console.error("❌ Failed to delete from Appwrite:", error);
+    }
   };
 
   return (
     <div className="kanban-wrapper">
       <h1 className="kanban-title">Kanban board ⭐</h1>
-
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="board">
           {Object.entries(columns).map(([colId, col]) => (
@@ -87,6 +145,7 @@ function Kanban() {
               title={col.name}
               tasks={col.tasks}
               openModal={openModal}
+              onDelete={handleDelete}
             />
           ))}
         </div>
@@ -98,7 +157,6 @@ function Kanban() {
             <h3>Create New Task</h3>
             <input type="text" name="title" value={formData.title} onChange={handleInput} placeholder="Task Title" />
             <input type="text" name="description" value={formData.description} onChange={handleInput} placeholder="Description" />
-            <input type="text" name="tags" value={formData.tags} onChange={handleInput} placeholder="Tags (comma separated)" />
             <input type="date" name="date" value={formData.date} onChange={handleInput} />
             <div className="modal-buttons">
               <button onClick={createTask}>Create</button>

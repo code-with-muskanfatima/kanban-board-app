@@ -1,47 +1,39 @@
-/* ========== Layout ========== */
+/* === Layout === */
 .kanban-wrapper {
   flex: 1;
-  padding: 0 2rem 2rem 2rem;
-  background-color: #f9fafb;
-  overflow-y: hidden;
-  overflow-x: hidden; /* ✅ Hide horizontal scroll */
+  padding: 2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-sizing: border-box;
+}
+
+.kanban-title {
+  margin-top: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: left;
 }
 
 .board {
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: nowrap;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-  box-sizing: border-box;
+  gap: 2rem;
+  justify-content: center;
+  padding-bottom: 2rem;
 }
 
-
-.kanban-title {
-  margin-top: 0;       /* ⬅️ Remove extra top space */
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #1e293b;
-}
-
-/* ========== Column ========== */
+/* === Column === */
 .column {
-  background-color: #f1f5f9;
+  background-color: #f3f4f6;
   border-radius: 16px;
   padding: 1rem;
-  width: 280px;
-  min-width: 280px;
-  max-width: 280px;
-  min-height: 600px; /* Ensures consistent column height */
-  flex-shrink: 0;
+  max-width: 320px;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
+  margin-top: 12px;
 }
 
 .column-header {
@@ -52,76 +44,104 @@
 }
 
 .column-header h2 {
-  font-size: 32px;
-  font-weight: 600;
-  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
 }
 
-/* Add (+) Button */
 .add-button {
-  background-color: #ffffff;
+  background-color: #fff;
   border: none;
-  font-size: 20px;
-  width: 28px;
-  height: 28px;
+  font-size: 22px;
+  width: 32px;
+  height: 32px;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .add-button:hover {
-  background-color: #e2e8f0;
+  background-color: #e5e7eb;
 }
 
-/* ========== Task Card ========== */
+/* === Task Card === */
 .task-card {
   background: #ffffff;
   border-radius: 12px;
-  padding: 1.2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1rem;
+  padding: 1.2rem 1rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.8rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .task-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08);
 }
 
-.task-card .title {
-  font-size: 18px;
+.task-card-body {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.task-card-body .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  object-fit: cover;
+}
+
+.task-content h4 {
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
   color: #111827;
 }
 
-.task-card .desc {
-  font-size: 16px;
+.task-content p {
+  margin: 2px 0;
+  font-size: 13px;
   color: #4b5563;
-  font-weight: 500;
   line-height: 1.4;
 }
 
-.task-card .date {
+.task-content p:last-child {
+  color: #6b7280;
   font-size: 12px;
-  color: #9ca3af;
 }
 
-.tags {
+/* === Footer: Icons + Delete === */
+.task-footer {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.tag {
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background-color: #e0f2fe;
-  color: #0369a1;
+.task-icons {
+  display: flex;
+  gap: 8px;
 }
 
-/* ========== Placeholder ========== */
+.task-icons a {
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.task-icons a:hover {
+  transform: scale(1.2);
+}
+
+.task-footer button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* === Placeholder Card === */
 .placeholder-card {
   background: #e5e7eb;
   border: 2px dashed #cbd5e1;
@@ -130,27 +150,29 @@
   text-align: center;
   cursor: pointer;
   margin-top: 1rem;
-  transition: background 0.2s;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: background 0.2s;
 }
 
 .placeholder-card:hover {
   background: #d1d5db;
 }
+
 .placeholder-card .plus {
   font-size: 28px;
   color: #4b5563;
   margin-bottom: 0.3rem;
 }
+
 .placeholder-card .add-text {
   font-size: 14px;
   font-weight: 500;
   color: #374151;
 }
 
-/* ========== Modal ========== */
+/* === Modal === */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -183,6 +205,41 @@
   border-radius: 8px;
   outline: none;
 }
+
+
+.task-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+  color: #111827;
+}
+
+.task-description {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.task-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.task-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  object-fit: cover;
+}
+
+.task-date {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+
 .modal input:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
@@ -208,6 +265,7 @@
   background-color: #e5e7eb;
   color: #374151;
 }
+
 .modal-buttons .cancel-btn:hover {
   background-color: #d1d5db;
 }
@@ -216,15 +274,23 @@
   background-color: #3b82f6;
   color: white;
 }
+
 .modal-buttons button:first-child:hover {
   background-color: #2563eb;
 }
 
-/* ========== Scroll Fix ========== */
+/* === Scrollbar Fix === */
 .board::-webkit-scrollbar {
   height: 8px;
 }
+
 .board::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 6px;
+}
+
+.column .task-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 4px;
 }
