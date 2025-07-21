@@ -9,21 +9,33 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
+  try {
+    // Try deleting existing session if it exists
     try {
-      await account.createEmailPasswordSession(email, password);
-      console.log("✅ Logged in successfully");
-      navigate("/");
-    } catch (error) {
-      console.error("❌ Login failed:", error);
-      alert("Login failed: " + error.message);
-    } finally {
-      setLoading(false);
+      await account.deleteSession('current');
+    } catch (sessionError) {
+      // No existing session — that's okay
+      if (sessionError.code !== 401) {
+        console.warn("⚠️ Unexpected session error:", sessionError);
+      }
     }
-  };
+
+    // Now create new session
+    await account.createEmailPasswordSession(email, password);
+    console.log("✅ Logged in successfully");
+    navigate("/");
+  } catch (error) {
+    console.error("❌ Login failed:", error);
+    alert("Login failed: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="login-container">
