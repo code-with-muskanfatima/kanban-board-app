@@ -1,85 +1,75 @@
 .header {
-  height: 66px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 2rem 6px 2rem;
+  padding: 12px 30px;
   background-color: white;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid #ebe9e9;
+  height: 65px;
+  gap: 20px;
 }
 
-
-.header-left .title {
+/* Logo */
+.my-logo {
+  font-size: 28px;
   font-weight: bold;
-  margin: 0;
+  /* color: #007bff; Optional: Blue color for branding */
+  margin-right: 20px;
   font-family: sans-serif;
-  font-size: 24px;
 }
 
-.header-center {
+
+/* Search bar */
+.search-wrapper {
   flex: 1;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.search-bar {
   display: flex;
   align-items: center;
-  background: #f1f1f1;
-  padding: 0.6rem 0.75rem;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ecebeb;
   border-radius: 6px;
-}
-
-.search-bar input {
-  border: none;
-  outline: none;
-  background: transparent;
-  padding-left: 0.5rem;
-  font-size: 16px;
-  width: 100%;
+  padding: 12px 14px;
+  /* border: 1px solid #ccc; */
 }
 
 .search-icon {
-  width: 16px;
-  height: 16px;
+  margin-right: 8px;
   color: #888;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.search-bar {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
 }
 
-.share-button {
+/* Right Side Icons */
+.header-icons {
   display: flex;
   align-items: center;
-  background-color: #2563eb;
+  gap: 32px;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #0271e7;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: 8px 14px;
+  border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
-  gap: 0.4rem;
 }
 
-.share-button:hover {
- background-color: #1d56d2;  
-}
-.lock-icon {
-  width: 16px;
-  height: 16px;
+.share-btn:hover {
+  background-color: #0260c5;
 }
 
-.icon-button {
-  background: none;
-  border: none;
+.icon {
   cursor: pointer;
-}
-
-.icon-button .icon {
-  width: 20px;
-  height: 20px;
-  color: #333;
+  color: #747373;
 }

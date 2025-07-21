@@ -23,18 +23,25 @@
 }
 
 /* === Column === */
+
+.columns-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: stretch; /* 👈 important for equal height */
+}
+
 .column {
-  background-color: #f3f4f6;
-  border-radius: 16px;
-  padding: 1rem;
-  max-width: 320px;
-  min-height: 600px;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 8px;
+  flex: 1;
+  min-height: 400px; /* 👈 minimum height for empty column */
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  box-sizing: border-box;
-  margin-top: 12px;
 }
+
+
+
 
 .column-header {
   display: flex;
@@ -237,6 +244,38 @@
 .task-date {
   font-size: 13px;
   color: #6b7280;
+}
+
+
+.kanban-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.logout-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right;
+  margin: 10px;
+}
+
+
+.welcome-user {
+  font-weight: 500;
+  color: #333;
 }
 
 

@@ -1,32 +1,30 @@
-import React from 'react';
-import './Header.css';
-import { Search, Lock, Settings, Bell } from 'lucide-react';
+import React from "react";
+import { Search, Settings, Bell, Lock } from "lucide-react";
+import "./Header.css";
+import LogoutButton from "../LogoutButton";
 
 const Header = () => {
   return (
     <header className="header">
-      <div className="header-left">
-        <h1 className="title">Kanban</h1>
+      <div className="my-logo">Kanban</div>
+
+      <div className="search-wrapper">
+        <Search className="search-icon" size={18} />
+        <input
+          type="text"
+          placeholder="Try searching task"
+          className="search-bar"
+        />
       </div>
 
-      <div className="header-center">
-        <div className="search-bar">
-          <Search className="search-icon" />
-          <input type="text" placeholder="Try searching tasks" />
-        </div>
-      </div>
-
-      <div className="header-right">
-        <button className="share-button">
-          <Lock className="lock-icon" />
-          Share
+      <div className="header-icons">
+        <button className="share-btn">
+          <Lock size={18} />
+          <span>Share</span>
         </button>
-        <button className="icon-button">
-          <Settings className="icon" />
-        </button>
-        <button className="icon-button">
-          <Bell className="icon" />
-        </button>
+        <Settings className="icon" size={20} />
+        <Bell className="icon" size={20} />
+        <LogoutButton />
       </div>
     </header>
   );

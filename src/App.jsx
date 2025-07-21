@@ -1,21 +1,28 @@
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import Kanban from './components/Kanban';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// ✅ Import your components
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Home from "./components/Home";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
   return (
-    <>
-      <Header />
-      <div className="main-layout">
-        <div className="sidebar-section">
-          <Sidebar />
-        </div>
-        <div className="kanban-section">
-          <Kanban />
-        </div>
-      </div>
-    </>
+    <Router basename="/kanban-react">
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 

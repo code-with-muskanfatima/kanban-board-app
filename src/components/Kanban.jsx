@@ -1,8 +1,8 @@
 // src/components/Kanban.jsx
 import React, { useEffect, useState } from 'react';
+import { databases, ID, DATABASE_ID, COLLECTION_ID } from '../appwriteConfig';
 import { DragDropContext } from '@hello-pangea/dnd';
 import KanbanColumn from './Column';
-import { databases, ID, DATABASE_ID, COLLECTION_ID } from '../appwriteConfig';
 import './Kanban.css';
 
 function Kanban() {
@@ -20,11 +20,11 @@ function Kanban() {
     column: 'todo',
   });
 
+  // ⬇️ Fetch tasks from Appwrite
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
-
         const newColumns = {
           todo: { name: 'To Do', tasks: [] },
           'in-progress': { name: 'In Progress', tasks: [] },
@@ -46,6 +46,7 @@ function Kanban() {
     fetchTasks();
   }, []);
 
+  // ⬇️ Drag & Drop Handler
   const handleDragEnd = async ({ source, destination }) => {
     if (!destination) return;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
@@ -66,16 +67,19 @@ function Kanban() {
     }
   };
 
+  // ⬇️ Modal: Open
   const openModal = (colId) => {
     setFormData({ title: '', date: '', description: '', column: colId });
     setShowModal(true);
   };
 
+  // ⬇️ Modal: Input
   const handleInput = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ⬇️ Modal: Create Task
   const createTask = async () => {
     if (!formData.title || !formData.date) {
       alert("Title and Date are required.");
@@ -98,7 +102,6 @@ function Kanban() {
         newTask
       );
 
-      // Add task to UI
       setColumns((prev) => ({
         ...prev,
         [formData.column]: {
@@ -114,6 +117,7 @@ function Kanban() {
     setShowModal(false);
   };
 
+  // ⬇️ Delete Task
   const handleDelete = async (taskId, columnId) => {
     setColumns((prev) => {
       const newTasks = prev[columnId].tasks.filter(task => task.$id !== taskId);
@@ -133,9 +137,16 @@ function Kanban() {
     }
   };
 
+ 
+
   return (
     <div className="kanban-wrapper">
-      <h1 className="kanban-title">Kanban board ⭐</h1>
+      {/* 🔥 Header with Logout */}
+      <div className="kanban-header">
+        <h1 className="kanban-title">Kanban Board ⭐</h1>
+      </div>
+
+      {/* 🧩 Board Columns */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="board">
           {Object.entries(columns).map(([colId, col]) => (
@@ -151,6 +162,7 @@ function Kanban() {
         </div>
       </DragDropContext>
 
+      {/* 📦 Modal for Task Creation */}
       {showModal && (
         <div className="modal-backdrop">
           <div className="modal">
