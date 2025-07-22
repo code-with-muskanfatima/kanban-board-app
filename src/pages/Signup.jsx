@@ -1,70 +1,82 @@
 import React, { useState } from "react";
-import { account } from "../appwriteConfig";
-import { ID } from "appwrite";
+import { Account } from "appwrite";
+import { client } from "../appwriteConfig";
 import { useNavigate } from "react-router-dom";
-import "./Signup.css"; // 👈 Import the custom CSS
+import './Signup.css';
 
-export default function Signup() {
+
+
+const Signup = () => {
+  const account = new Account(client);
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSignup = async (e) => {
+  const [user, setUser] = useState({
+    email: "",
+    password: "",
+    name: ""
+  });
+
+  const handleChange = (e) => {
+    setUser({
+      ...user,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      const userId = ID.unique();
-      const createdUser = await account.create(userId, email, password, name);
-      console.log("✅ User created:", createdUser);
-      navigate("/");
-    } catch (err) {
-      console.error("❌ Signup error:", err);
-      alert("Signup failed: " + err.message);
-    } finally {
-      setLoading(false);
+      // ✅ Step 1: Create account
+      await account.create(
+        "unique()", // auto-generate user ID
+        user.email,
+        user.password,
+        user.name
+      );
+
+      // ✅ Step 2: Create session (auto-login after signup)
+      await account.createEmailPasswordSession(user.email, user.password);
+
+      // ✅ Redirect to home
+      navigate("/kanban-board-app");
+    } catch (error) {
+      console.error("Signup Error:", error.message);
     }
   };
 
   return (
     <div className="signup-container">
-      <form onSubmit={handleSignup} className="signup-form">
-        <h2 className="signup-title">Create Account</h2>
-
+      <form onSubmit={handleSubmit}>
+        <h2>Signup</h2>
         <input
           type="text"
+          name="name"
           placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="signup-input"
+          value={user.name}
+          onChange={handleChange}
           required
         />
-
         <input
           type="email"
+          name="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="signup-input"
+          value={user.email}
+          onChange={handleChange}
           required
         />
-
         <input
           type="password"
-          placeholder="Password (min 8 characters)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="signup-input"
+          name="password"
+          placeholder="Password"
+          value={user.password}
+          onChange={handleChange}
           required
-          autoComplete="current-password"
         />
-
-        <button type="submit" className="signup-button" disabled={loading}>
-          {loading ? "Signing up..." : "Sign Up"}
-        </button>
+        <button type="submit">Create Account</button>
       </form>
     </div>
   );
-}
+};
+
+export default Signup;

@@ -66,6 +66,9 @@ export default function Login() {
         <button type="submit" className="login-button">
           {loading ? "Logging in..." : "Login"}
         </button>
+        <p style={{ textAlign: "center", marginTop: "10px" }}>
+  Don't have an account? <a href="/signup">Sign up</a>
+</p>
       </form>
     </div>
   );
