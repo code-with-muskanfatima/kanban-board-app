@@ -14,7 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route
-          path="/kanban-react"
+          path="/kanban-board-app"
           element={
             <ProtectedRoute>
               <Home />
