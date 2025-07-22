@@ -10,18 +10,20 @@ import ProtectedRoute from "./ProtectedRoute";
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route
-          path="/kanban-board-app"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+     <Routes>
+  <Route path="/" element={<Navigate to="/kanban-board-app" replace />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/signup" element={<Signup />} />
+  <Route
+    path="/kanban-board-app"
+    element={
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    }
+  />
+</Routes>
+
     </Router>
   );
 }
