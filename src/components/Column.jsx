@@ -1,3 +1,4 @@
+// src/components/Column.jsx
 import React from 'react';
 import TaskCard from './TaskCard';
 import { Droppable } from '@hello-pangea/dnd';
@@ -13,8 +14,9 @@ function KanbanColumn({ title, tasks, columnId, openModal, onDelete }) {
               <button className="add-button" onClick={() => openModal(columnId)}>+</button>
             )}
           </div>
-          <div className="task-list">
-            {tasks.length === 0 ? (
+
+          <div className="task-list" ref={provided.innerRef}>
+            {(tasks?.length ?? 0) === 0 ? (
               <div className="placeholder-card" onClick={() => openModal(columnId)}>
                 <div className="plus">+</div>
                 <div className="add-text">Add task</div>
@@ -22,7 +24,7 @@ function KanbanColumn({ title, tasks, columnId, openModal, onDelete }) {
             ) : (
               tasks.map((task, index) => (
                 <TaskCard
-                  key={task.id}
+                  key={task.$id}
                   task={task}
                   index={index}
                   columnId={columnId}

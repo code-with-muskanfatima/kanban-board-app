@@ -1,16 +1,16 @@
 /* === Layout === */
 .kanban-wrapper {
   flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  overflow-x: hidden;
+  padding: 1rem;
   box-sizing: border-box;
+  /* ✅ Removed scroll from here */
 }
 
 .kanban-title {
   margin-top: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
+  margin-bottom: 32px;
+  font-size: 36px;
+  font-weight: 600;
   color: #1f2937;
   text-align: left;
 }
@@ -20,28 +20,26 @@
   gap: 2rem;
   justify-content: center;
   padding-bottom: 2rem;
+  /* ✅ Removed scroll from here */
 }
 
 /* === Column === */
-
 .columns-wrapper {
   display: flex;
   gap: 20px;
-  align-items: stretch; /* 👈 important for equal height */
+  align-items: stretch;
 }
 
 .column {
-  background-color: #f4f4f4;
+  background-color: #e6acea;
   padding: 10px;
   border-radius: 8px;
   flex: 1;
-  min-height: 400px; /* 👈 minimum height for empty column */
+  min-height: 400px;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* ✅ Ensure no nested scroll */
 }
-
-
-
 
 .column-header {
   display: flex;
@@ -71,81 +69,133 @@
   background-color: #e5e7eb;
 }
 
+/* === Task List === */
+.task-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  min-height: 20px; /* ✅ Ensure it doesn't collapse */
+}
+
 /* === Task Card === */
 .task-card {
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
-  padding: 1.2rem 1rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  margin-bottom: 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.2s;
+  position: relative;
 }
 
 .task-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.task-card-body {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.task-card-body .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 9999px;
-  object-fit: cover;
-}
-
-.task-content h4 {
-  margin: 0;
-  font-size: 16px;
+.task-title {
+  font-size: 1.1rem;
   font-weight: 600;
+  margin-bottom: 6px;
   color: #111827;
 }
 
-.task-content p {
-  margin: 2px 0;
-  font-size: 13px;
-  color: #4b5563;
-  line-height: 1.4;
+.task-description {
+  color: #666;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
 }
 
-.task-content p:last-child {
-  color: #6b7280;
-  font-size: 12px;
+.task-meta {
+  font-size: 0.85rem;
+  color: #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-/* === Footer: Icons + Delete === */
 .task-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.task-icons {
-  display: flex;
-  gap: 8px;
-}
-
 .task-icons a {
-  text-decoration: none;
-  transition: transform 0.2s;
+  margin-right: 8px;
+  color: #6b7280;
 }
 
-.task-icons a:hover {
-  transform: scale(1.2);
-}
-
-.task-footer button {
+.task-delete-icon {
   background: none;
   border: none;
   cursor: pointer;
+  color: red;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.task-delete-icon:hover {
+  transform: scale(1.2);
+}
+
+/* === Confirmation Modal === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 24px 30px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.confirm-modal h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.confirm-modal p {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.modal-buttons button {
+  padding: 8px 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.modal-buttons .cancel-btn {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.modal-buttons .delete-btn {
+  background: crimson;
+  color: white;
 }
 
 /* === Placeholder Card === */
@@ -179,74 +229,7 @@
   color: #374151;
 }
 
-/* === Modal === */
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  z-index: 1001;
-}
-
-.modal input {
-  padding: 0.6rem 0.8rem;
-  font-size: 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  outline: none;
-}
-
-
-.task-title {
-  font-weight: 600;
-  font-size: 16px;
-  margin: 0;
-  color: #111827;
-}
-
-.task-description {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #4b5563;
-}
-
-.task-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
-}
-
-.task-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 9999px;
-  object-fit: cover;
-}
-
-.task-date {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-
+/* === Header & User === */
 .kanban-header {
   display: flex;
   justify-content: space-between;
@@ -260,7 +243,6 @@
   gap: 10px;
 }
 
-
 .logout-button {
   background-color: #e74c3c;
   color: white;
@@ -272,64 +254,134 @@
   margin: 10px;
 }
 
-
 .welcome-user {
   font-weight: 500;
   color: #333;
 }
 
-
+/* === Input Focus === */
 .modal input:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.modal-buttons button {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-}
-
-.modal-buttons .cancel-btn {
-  background-color: #e5e7eb;
-  color: #374151;
-}
-
-.modal-buttons .cancel-btn:hover {
-  background-color: #d1d5db;
-}
-
-.modal-buttons button:first-child {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.modal-buttons button:first-child:hover {
-  background-color: #2563eb;
-}
-
 /* === Scrollbar Fix === */
-.board::-webkit-scrollbar {
-  height: 8px;
+.task-list::-webkit-scrollbar {
+  width: 6px;
 }
 
-.board::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+.task-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
   border-radius: 6px;
 }
 
-.column .task-list {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding-right: 4px;
+
+/* === Modal Overlay === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(17, 24, 39, 0.4); /* darker backdrop */
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
+
+/* === Stylish Modal Box === */
+.modal {
+  background: #afd8fa; /* ✨ soft peachy color */
+  border-radius: 18px;  /* ✅ slightly more rounded */
+  padding-inline: 4rem;
+  padding-block: 2rem;
+  width: 100%;
+  max-width: 370px;     /* ✅ smaller width */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeSlideIn 0.3s ease-out;
+  border: 1px solid #f8cff4; /* soft border */
+}
+
+/* Animation */
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal h2 {
+  margin-bottom: 1.25rem;
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: #4b2e2e;
+}
+
+/* === Inputs & Textarea === */
+.modal input,
+.modal textarea {
+  width: 100%;
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+  border: 1px solid #fcd9c4;
+  border-radius: 10px;
+  background: #fffdfc;
+  font-size: 1rem;
+  color: #3d3d3d;
+  transition: 0.3s ease;
+}
+
+.modal input:focus,
+.modal textarea:focus {
+  outline: none;
+  border-color: #f8a978;
+  background: #fff;
+}
+
+/* === Button Group === */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+/* === Add Button === */
+.add-btn {
+  background: #f8a978; /* ✨ soft orange */
+  color: #fff;
+  padding: 0.7rem 1.3rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(248, 169, 120, 0.4);
+}
+
+.add-btn:hover {
+  background: #f68657;
+}
+
+/* === Cancel Button === */
+.cancel-btn {
+  background: transparent;
+  border: 2px solid #e2e8f0;
+  color: #4a5568;
+  padding: 0.7rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #f7fafc;
+}
+

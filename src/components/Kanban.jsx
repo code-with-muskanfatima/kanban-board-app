@@ -1,6 +1,6 @@
 // src/components/Kanban.jsx
 import React, { useEffect, useState } from 'react';
-import { databases, ID, DATABASE_ID, COLLECTION_ID } from '../appwriteConfig';
+import { databases, ID, DATABASE_ID, COLLECTION_ID, account } from '../appwriteConfig';
 import { DragDropContext } from '@hello-pangea/dnd';
 import KanbanColumn from './Column';
 import './Kanban.css';
@@ -13,14 +13,11 @@ function Kanban() {
   });
 
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    date: '',
-    description: '',
-    column: 'todo',
-  });
+  const [formData, setFormData] = useState({ title: '', date: '', description: '', column: 'todo' });
 
-  // ⬇️ Fetch tasks from Appwrite
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState({ taskId: null, columnId: null });
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -46,7 +43,6 @@ function Kanban() {
     fetchTasks();
   }, []);
 
-  // ⬇️ Drag & Drop Handler
   const handleDragEnd = async ({ source, destination }) => {
     if (!destination) return;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
@@ -67,40 +63,34 @@ function Kanban() {
     }
   };
 
-  // ⬇️ Modal: Open
   const openModal = (colId) => {
     setFormData({ title: '', date: '', description: '', column: colId });
     setShowModal(true);
   };
 
-  // ⬇️ Modal: Input
   const handleInput = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ⬇️ Modal: Create Task
   const createTask = async () => {
     if (!formData.title || !formData.date) {
       alert("Title and Date are required.");
       return;
     }
 
-    const newTask = {
-      title: formData.title.trim(),
-      description: formData.description?.trim() || '',
-      date: formData.date,
-      status: formData.column,
-      image: 'https://source.unsplash.com/40x40/?face',
-    };
-
     try {
-      const res = await databases.createDocument(
-        DATABASE_ID,
-        COLLECTION_ID,
-        ID.unique(),
-        newTask
-      );
+      const user = await account.get();
+
+      const newTask = {
+        title: formData.title.trim(),
+        description: formData.description?.trim() || '',
+        date: formData.date,
+        status: formData.column,
+        createdBy: user.name,
+      };
+
+      const res = await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), newTask);
 
       setColumns((prev) => ({
         ...prev,
@@ -117,8 +107,13 @@ function Kanban() {
     setShowModal(false);
   };
 
-  // ⬇️ Delete Task
-  const handleDelete = async (taskId, columnId) => {
+  const handleDelete = (taskId, columnId) => {
+    setDeleteInfo({ taskId, columnId });
+    setConfirmModal(true);
+  };
+
+  const confirmDelete = async () => {
+    const { taskId, columnId } = deleteInfo;
     setColumns((prev) => {
       const newTasks = prev[columnId].tasks.filter(task => task.$id !== taskId);
       return {
@@ -135,26 +130,23 @@ function Kanban() {
     } catch (error) {
       console.error("❌ Failed to delete from Appwrite:", error);
     }
-  };
 
- 
+    setConfirmModal(false);
+    setDeleteInfo({ taskId: null, columnId: null });
+  };
 
   return (
     <div className="kanban-wrapper">
-      {/* 🔥 Header with Logout */}
-      <div className="kanban-header">
-        <h1 className="kanban-title">Kanban Board ⭐</h1>
-      </div>
+      <div className="kanban-title">Kanban Board ⭐</div>
 
-      {/* 🧩 Board Columns */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="board">
-          {Object.entries(columns).map(([colId, col]) => (
+          {Object.entries(columns).map(([columnId, column]) => (
             <KanbanColumn
-              key={colId}
-              columnId={colId}
-              title={col.name}
-              tasks={col.tasks}
+              key={columnId}
+              columnId={columnId}
+              title={column.name}
+              tasks={column.tasks}
               openModal={openModal}
               onDelete={handleDelete}
             />
@@ -162,17 +154,46 @@ function Kanban() {
         </div>
       </DragDropContext>
 
-      {/* 📦 Modal for Task Creation */}
+      {/* ✅ Add Task Modal */}
       {showModal && (
-        <div className="modal-backdrop">
+        <div className="modal-overlay">
           <div className="modal">
-            <h3>Create New Task</h3>
-            <input type="text" name="title" value={formData.title} onChange={handleInput} placeholder="Task Title" />
-            <input type="text" name="description" value={formData.description} onChange={handleInput} placeholder="Description" />
-            <input type="date" name="date" value={formData.date} onChange={handleInput} />
+            <h2>Create Task</h2>
+            <input
+              type="text"
+              name="title"
+              placeholder="Title"
+              value={formData.title}
+              onChange={handleInput}
+            />
+              <textarea
+                name="description"
+                placeholder="Description"
+                value={formData.description}
+                onChange={handleInput}
+              />
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleInput}
+            />
             <div className="modal-buttons">
-              <button onClick={createTask}>Create</button>
               <button className="cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
+              <button className="add-btn" onClick={createTask}>Add</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Confirm Delete Modal */}
+      {confirmModal && (
+        <div className="modal-overlay">
+          <div className="confirm-modal">
+            <h3>Are you sure you want to delete this task?</h3>
+            <div className="modal-buttons">
+              <button className="cancel-btn" onClick={() => setConfirmModal(false)}>Cancel</button>
+              <button className="delete-btn" onClick={confirmDelete}>Delete</button>
             </div>
           </div>
         </div>

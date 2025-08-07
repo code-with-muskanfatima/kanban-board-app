@@ -20,16 +20,3 @@ function Home() {
 }
 
 export default Home;
-
-// pages/Home.jsx
-// import React from "react";
-// import LogoutButton from "../LogoutButton";
-
-// export default function Home() {
-//   return (
-//     <div>
-//       <h1>Welcome to the Kanban App!</h1>
-//       <LogoutButton />
-//     </div>
-//   );
-// }
