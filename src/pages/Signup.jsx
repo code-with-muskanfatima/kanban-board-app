@@ -1,17 +1,16 @@
+// src/pages/Signup.jsx
 import React, { useState } from "react";
-import { Account, databases, ID } from "appwrite";
-import { client, DATABASE_ID } from "../appwriteConfig";
 import { useNavigate } from "react-router-dom";
-import './Signup.css';
+import { account, databases, DATABASE_ID, USERS_COLLECTION_ID, ID } from "../appwriteConfig";
+import "./Signup.css";
 
-const Signup = ({ onUserAdded }) => { // optional prop to notify Kanban
-  const account = new Account(client);
+const Signup = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
+    name: "",
     email: "",
-    password: "",
-    name: ""
+    password: ""
   });
 
   const handleChange = (e) => {
@@ -25,31 +24,34 @@ const Signup = ({ onUserAdded }) => { // optional prop to notify Kanban
     e.preventDefault();
 
     try {
-      // ✅ Step 1: Create account
-      const newAccount = await account.create(
-        "unique()", // auto-generate user ID
+      // 1️⃣ Create Appwrite account
+      await account.create(
+        ID.unique(),
         user.email,
         user.password,
         user.name
       );
 
-      // ✅ Step 2: Create session (auto-login after signup)
+      // 2️⃣ Auto-login
       await account.createEmailPasswordSession(user.email, user.password);
 
-      // ✅ Step 3: Create user document in `users` collection
-      await databases.createDocument(DATABASE_ID, "64fa92bca2340e66cd15a6f9", ID.unique(), {
-        name: user.name,
-        email: user.email
-      });
+      // 3️⃣ Add user to Users Collection for Kanban dropdown
+      await databases.createDocument(
+        DATABASE_ID,
+        USERS_COLLECTION_ID,
+        ID.unique(),
+        {
+          name: user.name,
+          email: user.email
+        }
+      );
 
-      // ✅ Optional: notify parent component Kanban to refresh users
-      if(onUserAdded) onUserAdded({ $id: newAccount.$id, name: user.name, email: user.email });
-
-      // ✅ Redirect to Kanban
+      // 4️⃣ Redirect to Kanban
       navigate("/kanban-board-app");
+
     } catch (error) {
       console.error("Signup Error:", error.message);
-      alert("Signup failed. Check console.");
+      alert(error.message);
     }
   };
 

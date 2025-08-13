@@ -1,26 +1,28 @@
 // src/appwriteConfig.js
-import { Client, Account, Databases, Functions, ID } from 'appwrite';
+import { Client, Account, Databases, ID } from "appwrite";
 
+// Initialize Appwrite client
 const client = new Client();
-
 client
-  .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT)
-  .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID);
+  .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT) // Appwrite endpoint
+  .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID); // Project ID
 
+// Appwrite services
 const account = new Account(client);
 const databases = new Databases(client);
-const functions = new Functions(client);
 
+// Database + Collection IDs from .env
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
-const COLLECTION_ID = import.meta.env.VITE_-APPWRITE_COLLECTION_ID;
+const TASKS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_TASKS_COLLECTION_ID;
+const USERS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_USERS_COLLECTION_ID;
 
-// ✅ Export everything from one place, cleanly
+// Export everything
 export {
   client,
   account,
   databases,
-  functions,
   ID,
   DATABASE_ID,
-  COLLECTION_ID
+  TASKS_COLLECTION_ID,
+  USERS_COLLECTION_ID,
 };
