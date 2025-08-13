@@ -1,13 +1,12 @@
+// src/components/TaskCard.jsx
 import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
-import { Trash2, Github, Linkedin, Figma } from 'lucide-react';
 import './Kanban.css';
+import { Delete, DeleteIcon, Trash, Trash2, TrashIcon } from 'lucide-react';
 
-function TaskCard({ task, index, onDelete, columnId }) {
-  if (!task || !task.$id) return null; // ✅ Prevent render crash if task is missing
-
+function TaskCard({ task, index, onDelete }) {
   return (
-    <Draggable draggableId={task.$id || task.id} index={index}>
+    <Draggable draggableId={task.$id} index={index}>
       {(provided) => (
         <div
           className="task-card"
@@ -15,51 +14,19 @@ function TaskCard({ task, index, onDelete, columnId }) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <h4 className="task-title">{task.title || 'Untitled'}</h4>
-          <p className="task-description">{task.description || 'No description'}</p>
-
-          <div className="task-meta">
-            <span className="task-author">👤 {task.createdBy || 'Unknown'}</span>
-            <span className="task-date">📅 {task.date || 'No date'}</span>
-          </div>
-
+          <h4>{task.title}</h4>
+          <p>{task.description}</p>
+          <h5><strong>📆</strong> {task.date}</h5>
+          <h6><strong>👤</strong> {task.createdBy}</h6>
           <div className="task-footer">
-            <div className="task-icons">
-              {Array.isArray(task.links) &&
-                task.links.map((link, i) => {
-                  if (link.includes('github.com')) {
-                    return (
-                      <a key={i} href={link} target="_blank" rel="noreferrer">
-                        <Github size={16} />
-                      </a>
-                    );
-                  } else if (link.includes('linkedin.com')) {
-                    return (
-                      <a key={i} href={link} target="_blank" rel="noreferrer">
-                        <Linkedin size={16} />
-                      </a>
-                    );
-                  } else if (link.includes('figma.com')) {
-                    return (
-                      <a key={i} href={link} target="_blank" rel="noreferrer">
-                        <Figma size={16} />
-                      </a>
-                    );
-                  } else {
-                    return null;
-                  }
-                })}
-            </div>
 
-            {/* 🗑️ Delete Task */}
-            <button
-              className="task-delete-icon"
-              onClick={() => onDelete(task.$id || task.id, columnId)}
-              title="Delete Task"
-            >
-              <Trash2 size={16} />
-            </button>
+          {task.assignedTo && (
+            <h3><strong>Assigned to:</strong> {task.assignedTo}</h3>
+          )}
+
+          <Trash2 className="delete-btn" size={18} onClick={() => onDelete(task.$id)} />
           </div>
+
         </div>
       )}
     </Draggable>

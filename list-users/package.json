@@ -1,0 +1,9 @@
+{
+  "name": "list-users",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "node-appwrite": "^9.0.1"
+  }
+}

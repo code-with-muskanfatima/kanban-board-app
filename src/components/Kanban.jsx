@@ -1,11 +1,14 @@
-// src/components/Kanban.jsx
+import Select from "react-select";
 import React, { useEffect, useState } from 'react';
-import { databases, ID, DATABASE_ID, COLLECTION_ID, account } from '../appwriteConfig';
+import { databases, DATABASE_ID, COLLECTION_ID, account, functions } from '../appwriteConfig';
 import { DragDropContext } from '@hello-pangea/dnd';
 import KanbanColumn from './Column';
+import { ID } from 'appwrite';
 import './Kanban.css';
 
 function Kanban() {
+  const FUNCTION_ID = '689470360011b954301c';
+  const [users, setAllUsers] = useState([]);
   const [columns, setColumns] = useState({
     todo: { name: 'To Do', tasks: [] },
     'in-progress': { name: 'In Progress', tasks: [] },
@@ -13,35 +16,54 @@ function Kanban() {
   });
 
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ title: '', date: '', description: '', column: 'todo' });
-
+  const [formData, setFormData] = useState({
+    title: '',
+    date: '',
+    description: '',
+    column: 'todo',
+    assignedTo: ''
+  });
   const [confirmModal, setConfirmModal] = useState(false);
   const [deleteInfo, setDeleteInfo] = useState({ taskId: null, columnId: null });
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
-        const newColumns = {
-          todo: { name: 'To Do', tasks: [] },
-          'in-progress': { name: 'In Progress', tasks: [] },
-          done: { name: 'Done', tasks: [] },
-        };
+ useEffect(() => {
+  const fetchCurrentUser = async () => {
+    try {
+      const user = await account.get();
+      console.log("Current user:", user);
+      // Sirf current user ko dropdown ke option me rakho
+      setAllUsers([{ name: user.name, email: user.email }]);
+    } catch (error) {
+      console.error("❌ Failed to fetch current user:", error);
+      setAllUsers([]);
+    }
+  };
 
-        res.documents.forEach((doc) => {
-          if (newColumns[doc.status]) {
-            newColumns[doc.status].tasks.push(doc);
-          }
-        });
+  const fetchTasks = async () => {
+    try {
+      const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
+      const newColumns = {
+        todo: { name: 'To Do', tasks: [] },
+        'in-progress': { name: 'In Progress', tasks: [] },
+        done: { name: 'Done', tasks: [] },
+      };
 
-        setColumns(newColumns);
-      } catch (err) {
-        console.error('Error fetching tasks:', err);
-      }
-    };
+      res.documents.forEach((doc) => {
+        if (newColumns[doc.status]) {
+          newColumns[doc.status].tasks.push(doc);
+        }
+      });
 
-    fetchTasks();
-  }, []);
+      setColumns(newColumns);
+    } catch (err) {
+      console.error('Error fetching tasks:', err);
+    }
+  };
+
+  fetchCurrentUser();
+  fetchTasks();
+}, []);
+
 
   const handleDragEnd = async ({ source, destination }) => {
     if (!destination) return;
@@ -64,7 +86,7 @@ function Kanban() {
   };
 
   const openModal = (colId) => {
-    setFormData({ title: '', date: '', description: '', column: colId });
+    setFormData({ title: '', date: '', description: '', column: colId, assignedTo: '' });
     setShowModal(true);
   };
 
@@ -88,6 +110,7 @@ function Kanban() {
         date: formData.date,
         status: formData.column,
         createdBy: user.name,
+        assignedTo: formData.assignedTo || '',
       };
 
       const res = await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), newTask);
@@ -143,18 +166,18 @@ function Kanban() {
         <div className="board">
           {Object.entries(columns).map(([columnId, column]) => (
             <KanbanColumn
-              key={columnId}
-              columnId={columnId}
-              title={column.name}
-              tasks={column.tasks}
-              openModal={openModal}
-              onDelete={handleDelete}
-            />
+             key={columnId}
+             columnId={columnId}
+             title={column.name}
+             tasks={column.tasks}
+             onDelete={handleDelete}
+             users={users}
+             openModal={openModal}
+           />
           ))}
         </div>
       </DragDropContext>
 
-      {/* ✅ Add Task Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
@@ -166,18 +189,39 @@ function Kanban() {
               value={formData.title}
               onChange={handleInput}
             />
-              <textarea
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleInput}
-              />
+            <textarea
+              name="description"
+              placeholder="Description"
+              value={formData.description}
+              onChange={handleInput}
+            />
             <input
               type="date"
               name="date"
               value={formData.date}
               onChange={handleInput}
             />
+
+
+         {/* Assign To with Search */}
+        <Select
+         className="assign-to-dropdown"
+         classNamePrefix="react-select"
+         options={users.map(u => ({
+           value: u.name || u.email,
+           label: u.name || u.email
+         }))}
+         value={
+           formData.assignedTo
+             ? { value: formData.assignedTo, label: formData.assignedTo }
+             : null
+         }
+         onChange={(selected) =>
+           setFormData(prev => ({ ...prev, assignedTo: selected.value }))
+         }
+         placeholder="Assigned to"
+         isClearable
+         />
             <div className="modal-buttons">
               <button className="cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
               <button className="add-btn" onClick={createTask}>Add</button>
@@ -186,7 +230,6 @@ function Kanban() {
         </div>
       )}
 
-      {/* ✅ Confirm Delete Modal */}
       {confirmModal && (
         <div className="modal-overlay">
           <div className="confirm-modal">

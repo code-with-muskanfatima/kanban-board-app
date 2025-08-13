@@ -3,7 +3,7 @@ import React from 'react';
 import TaskCard from './TaskCard';
 import { Droppable } from '@hello-pangea/dnd';
 
-function KanbanColumn({ title, tasks, columnId, openModal, onDelete }) {
+function KanbanColumn({ columnId, title, tasks, onDelete, users, openModal }) {
   return (
     <Droppable droppableId={columnId}>
       {(provided) => (
@@ -15,7 +15,7 @@ function KanbanColumn({ title, tasks, columnId, openModal, onDelete }) {
             )}
           </div>
 
-          <div className="task-list" ref={provided.innerRef}>
+          <div className="task-list">
             {(tasks?.length ?? 0) === 0 ? (
               <div className="placeholder-card" onClick={() => openModal(columnId)}>
                 <div className="plus">+</div>
@@ -27,8 +27,8 @@ function KanbanColumn({ title, tasks, columnId, openModal, onDelete }) {
                   key={task.$id}
                   task={task}
                   index={index}
-                  columnId={columnId}
-                  onDelete={onDelete}
+                  onDelete={() => onDelete(task.$id, columnId)}
+                  users={users}
                 />
               ))
             )}
