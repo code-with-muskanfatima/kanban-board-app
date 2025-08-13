@@ -184,13 +184,23 @@ function Kanban() {
             <input type="date" name="date" value={formData.date} onChange={handleInput} />
 
             {/* Users Dropdown */}
-            <Select className="assign-to-dropdown"
-              options={users.map((u) => ({ value: u.$id, label: u.name }))}
-              value={users.find((u) => u.$id === formData.assignedTo) || null}
-              onChange={(selected) => setFormData((prev) => ({ ...prev, assignedTo: selected ? selected.value : "" }))}
-              placeholder="Assign to"
-              isClearable
-            />
+           <Select
+            options={users.map(u => ({ value: u.$id, label: u.name }))}
+           value={
+           formData.assignedTo
+           ? { value: formData.assignedTo, label: users.find(u => u.$id === formData.assignedTo)?.name }
+             : null
+          }
+            onChange={(selected) =>
+           setFormData(prev => ({
+            ...prev,
+           assignedTo: selected ? selected.value : ''
+           }))
+         }
+          placeholder="Assign to"
+          isClearable
+        />
+
 
             <div className="modal-buttons">
               <button className="cancel-btn" onClick={() => setShowModal(false)}>

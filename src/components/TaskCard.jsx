@@ -2,9 +2,12 @@
 import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import './Kanban.css';
-import { Delete, DeleteIcon, Trash, Trash2, TrashIcon } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
-function TaskCard({ task, index, onDelete }) {
+function TaskCard({ task, index, onDelete, users }) {
+  // Lookup the assigned user's name
+  const assignedUser = users.find(u => u.$id === task.assignedTo);
+
   return (
     <Draggable draggableId={task.$id} index={index}>
       {(provided) => (
@@ -19,14 +22,13 @@ function TaskCard({ task, index, onDelete }) {
           <h5><strong>📆</strong> {task.date}</h5>
           <h6><strong>👤</strong> {task.createdBy}</h6>
           <div className="task-footer">
-
-          {task.assignedTo && (
-            <h3><strong>Assigned to:</strong> {task.assignedTo}</h3>
-          )}
-
-          <Trash2 className="delete-btn" size={18} onClick={() => onDelete(task.$id)} />
+            {assignedUser ? (
+              <h3><strong>Assigned to:</strong> {assignedUser.name}</h3>
+            ) : (
+              <h3><strong>Assigned to:</strong> Unassigned</h3>
+            )}
+            <Trash2 className="delete-btn" size={18} onClick={() => onDelete(task.$id)} />
           </div>
-
         </div>
       )}
     </Draggable>

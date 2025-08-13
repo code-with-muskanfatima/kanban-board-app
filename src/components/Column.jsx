@@ -23,13 +23,13 @@ function KanbanColumn({ columnId, title, tasks, onDelete, users, openModal }) {
               </div>
             ) : (
               tasks.map((task, index) => (
-                <TaskCard
-                  key={task.$id}
-                  task={task}
-                  index={index}
-                  onDelete={() => onDelete(task.$id, columnId)}
-                  users={users}
-                />
+               <TaskCard 
+                task={task} 
+                index={index} 
+                onDelete={onDelete} 
+                users={users} 
+              />
+
               ))
             )}
             {provided.placeholder}
