@@ -1,94 +1,67 @@
 import React, { useState } from "react";
-import { account } from "../appwrite/appwrite";
+import { account, databases, DATABASE_ID } from "../appwriteConfig";
 import { useNavigate } from "react-router-dom";
-import "./Auth.css"; // 👈 import the CSS file
 
 export default function Auth() {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const handleAuth = async () => {
     try {
       if (isSignup) {
-        await account.create("unique()", email, password, name);
-        await account.createEmailPasswordSession(email, password);
+        // Signup
+        const user = await account.create(ID.unique(), email, password, name);
+
+        // ✅ Save user to "users" collection
+        await databases.createDocument(DATABASE_ID, "users", ID.unique(), {
+          email,
+          name
+        });
+
+        alert("Signup successful!");
       } else {
-        await account.createEmailPasswordSession(email, password);
+        // Login
+        await account.createSession(email, password);
+        alert("Login successful!");
       }
 
-      window.location.href = "/";
+      navigate("/kanban"); // redirect to Kanban
     } catch (err) {
-      alert("❌ Error: " + err.message);
       console.error(err);
-    } finally {
-      setLoading(false);
+      alert(err.message);
     }
   };
 
   return (
-    <div className="auth-container">
-      <form onSubmit={handleSubmit} className="auth-form">
-        <h2 className="auth-title">
-          {isSignup ? "Create Account" : "Login"}
-        </h2>
-
-        {isSignup && (
-          <input
-            type="text"
-            placeholder="Your Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="auth-input"
-            required
-          />
-        )}
-
+    <div>
+      <h2>{isSignup ? "Signup" : "Login"}</h2>
+      {isSignup && (
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="auth-input"
-          required
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="auth-input"
-          required
-        />
-
-        <button type="submit" className="auth-button">
-          {loading
-            ? isSignup
-              ? "Creating Account..."
-              : "Logging in..."
-            : isSignup
-            ? "Sign Up"
-            : "Login"}
-        </button>
-
-        <p className="auth-toggle">
-          {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
-          <button
-            type="button"
-            className="auth-toggle-btn"
-            onClick={() => setIsSignup(!isSignup)}
-          >
-            {isSignup ? "Login" : "Sign Up"}
-          </button>
-        </p>
-      </form>
+      )}
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button onClick={handleAuth}>{isSignup ? "Signup" : "Login"}</button>
+      <p onClick={() => setIsSignup(!isSignup)}>
+        {isSignup ? "Already have an account? Login" : "No account? Signup"}
+      </p>
     </div>
   );
 }

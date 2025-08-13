@@ -1,18 +1,25 @@
 import { Client, Users } from "node-appwrite";
 
-export default async ({ req, res, log, error }) => {
-  const client = new Client()
-    .setEndpoint(process.env.APPWRITE_ENDPOINT) // Example: https://cloud.appwrite.io/v1
+const client = new Client();
+
+client
+    .setEndpoint(process.env.APPWRITE_ENDPOINT)
     .setProject(process.env.APPWRITE_PROJECT_ID)
-    .setKey(process.env.APPWRITE_API_KEY); // Admin API key chahiye
+    .setKey(process.env.APPWRITE_API_KEY); // Server key
 
-  const users = new Users(client);
+const users = new Users(client);
 
-  try {
-    const result = await users.list();
-    return res.json({ users: result.users });
-  } catch (err) {
-    error(err);
-    return res.json({ error: err.message });
-  }
-};
+export default async function(req, res) {
+    try {
+        const result = await users.list();
+        // result.users is an array of users
+        // Sirf name aur email nikalna
+        const formattedUsers = result.users.map(user => ({
+            name: user.name || user.email,
+            id: user.$id
+        }));
+        res.json(formattedUsers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

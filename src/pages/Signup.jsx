@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { Account } from "appwrite";
-import { client } from "../appwriteConfig";
+import { Account, databases, ID } from "appwrite";
+import { client, DATABASE_ID } from "../appwriteConfig";
 import { useNavigate } from "react-router-dom";
 import './Signup.css';
 
-
-
-const Signup = () => {
+const Signup = ({ onUserAdded }) => { // optional prop to notify Kanban
   const account = new Account(client);
   const navigate = useNavigate();
 
@@ -28,7 +26,7 @@ const Signup = () => {
 
     try {
       // ✅ Step 1: Create account
-      await account.create(
+      const newAccount = await account.create(
         "unique()", // auto-generate user ID
         user.email,
         user.password,
@@ -38,10 +36,20 @@ const Signup = () => {
       // ✅ Step 2: Create session (auto-login after signup)
       await account.createEmailPasswordSession(user.email, user.password);
 
-      // ✅ Redirect to home
+      // ✅ Step 3: Create user document in `users` collection
+      await databases.createDocument(DATABASE_ID, "64fa92bca2340e66cd15a6f9", ID.unique(), {
+        name: user.name,
+        email: user.email
+      });
+
+      // ✅ Optional: notify parent component Kanban to refresh users
+      if(onUserAdded) onUserAdded({ $id: newAccount.$id, name: user.name, email: user.email });
+
+      // ✅ Redirect to Kanban
       navigate("/kanban-board-app");
     } catch (error) {
       console.error("Signup Error:", error.message);
+      alert("Signup failed. Check console.");
     }
   };
 

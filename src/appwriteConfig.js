@@ -12,7 +12,7 @@ const databases = new Databases(client);
 const functions = new Functions(client);
 
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
-const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;
+const COLLECTION_ID = import.meta.env.VITE_-APPWRITE_COLLECTION_ID;
 
 // ✅ Export everything from one place, cleanly
 export {
