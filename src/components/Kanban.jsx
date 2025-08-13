@@ -28,7 +28,7 @@ function Kanban() {
   // ✅ Fetch tasks + users
   const fetchUsers = async () => {
     try {
-      const res = await databases.listDocuments(DATABASE_ID, "YOUR_USERS_COLLECTION_ID");
+      const res = await databases.listDocuments(DATABASE_ID, "686fa4d3001c5dfb0e86");
       setAllUsers(res.documents.map(u => ({
         $id: u.$id,
         name: u.name || u.email,
