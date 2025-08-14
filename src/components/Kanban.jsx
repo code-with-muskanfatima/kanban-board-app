@@ -184,7 +184,7 @@ function Kanban() {
             <input type="date" name="date" value={formData.date} onChange={handleInput} />
 
             {/* Users Dropdown */}
-           <Select
+           <Select className="assign-to-dropdown"
             options={users.map(u => ({ value: u.$id, label: u.name }))}
            value={
            formData.assignedTo
